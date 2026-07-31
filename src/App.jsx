@@ -149,11 +149,14 @@ const workInfoByMedia = {
   '/assets/works/work-33.jpg': { eventName: '年度商户峰会', theme: '倒计时海报' },
 }
 
+const makeThumb = (media) => media.replace('/assets/', '/assets/thumbs/').replace(/\.[^.]+$/, '.jpg')
+
 const makeWork = (title, category, media, layout, type) => ({
   title: workInfoByMedia[media]?.theme || title,
   category: workInfoByMedia[media]?.eventName || category,
   desc: '按原始比例完整展示作品，不裁切画面；宽幅和超宽作品会自动占据更多网格列。',
   media,
+  thumb: makeThumb(media),
   ...(layout ? { layout } : {}),
   ...(type ? { type } : {}),
 })
@@ -543,12 +546,9 @@ function WorkCard({ project, index, onOpen }) {
             }
           }}
         >
-          {project.type === 'video' ? (
-            <video src={project.media} autoPlay muted loop playsInline controls />
-          ) : (
-            <img src={project.media} alt={project.title} />
-          )}
+          <img src={project.thumb} alt={project.title} loading="lazy" decoding="async" />
           <div className="project-index">{index}</div>
+          {project.type === 'video' && <div className="project-play">▶</div>}
           <div className="project-zoom">点击放大</div>
         </div>
       </article>
@@ -569,9 +569,9 @@ function WorkPreview({ project, onClose }) {
         </div>
         <div className="work-preview-media">
           {project.type === 'video' ? (
-            <video src={project.media} autoPlay loop playsInline controls />
+            <video src={project.media} poster={project.thumb} autoPlay loop playsInline controls />
           ) : (
-            <img src={project.media} alt={project.title} />
+            <img src={project.media} alt={project.title} decoding="async" />
           )}
         </div>
       </div>
